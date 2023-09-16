@@ -1,0 +1,49 @@
+<odoo>
+    <data>
+        <record id="view_order_form_inherit_business_model" model="ir.ui.view">
+            <field name="name">sale.order.form.inherit.business_model</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form" />
+            <field name="arch" type="xml">
+                <!-- Business model -->
+                <xpath expr="//group[@name='partner_details']/field[@name='partner_id']" position="after">
+                    <field name="business_model" required="1" />
+                </xpath>
+
+                <!-- display name -->
+                <xpath expr="//field[@name='name']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="display_name" readonly="1" />
+                </xpath>
+
+                <!-- tax filter with business_model -->
+                <xpath expr="//field[@name='order_line']/tree" position="inside">
+                    <field name="order_business_model" invisible="1" />
+                </xpath>
+                <xpath expr="//field[@name='order_line']/tree//field[@name='tax_id']" position="attributes">
+                    <attribute name="domain">[('type_tax_use','=','sale'),('company_id','=',parent.company_id),('business_model', '=', order_business_model)]</attribute>
+                </xpath>
+
+                <xpath expr="//field[@name='order_line']/form" position="inside">
+                    <field name="order_business_model" invisible="1" />
+                </xpath>
+                <xpath expr="//field[@name='order_line']/form//field[@name='tax_id']" position="attributes">
+                    <attribute name="domain">[('type_tax_use','=','sale'),('company_id','=',parent.company_id),('business_model', '=', order_business_model)]</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_sales_order_filter_inherit_business_model" model="ir.ui.view">
+            <field name="name">sale.order.list.select.inherit.business_model</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_sales_order_filter" />
+            <field name="arch" type="xml">
+                <xpath expr="//filter[@name='customer']" position="after">
+                    <filter string="Business Model" name="business_model" domain="[]" context="{'group_by': 'business_model'}" />
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
